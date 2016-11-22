@@ -10,7 +10,7 @@ from .database import session
 
 
 @app.route("/api/posts", methods=["GET"])
-@decorators.accept("application/json")
+#@decorators.accept("application/json")
 def posts_get():
     """ Get a list of posts """
 
@@ -22,7 +22,7 @@ def posts_get():
     return Response(data, 200, mimetype="application/json")
     
 @app.route("/api/posts/<int:id>", methods=["GET"])
-@decorators.accept("application/json")
+#@decorators.accept("application/json")
 def post_get(id):
     """ Single post endpoint """
     # Get the post from the database
@@ -40,7 +40,7 @@ def post_get(id):
     return Response(data, 200, mimetype="application/json")
     
 @app.route("/api/posts/<int:id>", methods=["DELETE"])
-@decorators.accept("application/json")
+#@decorators.accept("application/json")
 def post_delete(id): 
     """Delete single post"""
     
@@ -57,6 +57,9 @@ def post_delete(id):
     # Delete the post
     session.delete(post)
     session.commit()
+    message = "post id: {} is successfully deleted".format(id)
+    data = json.dumps({"message": message})
+    return Response(data, 200, mimetype="application/json")
     
     
     

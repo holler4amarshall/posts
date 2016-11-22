@@ -35,6 +35,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data, [])
         
+    '''
     def test_unsupported_accept_header(self):
         response = self.client.get("/api/posts",
             headers=[("Accept", "application/xml")]
@@ -46,6 +47,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["message"],
                          "Request must accept application/json data")
+    '''
         
         
     def test_get_posts(self):
@@ -99,6 +101,27 @@ class TestAPI(unittest.TestCase):
 
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["message"], "Could not find post with id 1")
+        
+    def test_delete_single_post(self): 
+        """ Delete a single post that exists """
+        
+        postA = models.Post(title="Example Post A", body="Just a test")
+        session.add_all([postA])
+        session.commit()
+        
+        response = self.client.delete("/api/posts/{}".format(postA.id),
+                                      headers=[("Accept", "application/json")])
+        
+        data = json.loads(response.data.decode("ascii"))
+        
+        self.assertEqual(data["message"], "post id: {} is successfully deleted".format(postA.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "application/json")
+
+        posts = session.query(models.Post).all()
+        self.assertEqual(len(posts), 0) 
+
+        
 
     def tearDown(self):
         """ Test teardown """
