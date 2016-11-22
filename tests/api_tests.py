@@ -287,16 +287,20 @@ class TestAPI(unittest.TestCase):
     def test_put_post(self): 
         """ Editing an existing post, using Put method """
         
+        #add a new post for testing against
         postA = models.Post(title="Example Post A", body="Just a test")
         session.add_all([postA])
         session.commit()
         
+        #set up the data for the edited post
         data = {
+            "id": "{}".format(postA.id),
             "title": "An updated post title",
             "body": "An updated body of the post"
         }
-
-        response = self.client.post("/api/post/{}".format(postA.id),
+        
+        
+        response = self.client.put("/api/post/{}".format(postA.id),
             data=json.dumps(data),
             content_type="application/json",
             headers=[("Accept", "application/json")]
@@ -304,8 +308,7 @@ class TestAPI(unittest.TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, "application/json")
-        self.assertEqual(urlparse(response.headers.get("Location")).path,
-                         "/api/posts/{}".format(postA.id))
+        self.assertEqual(urlparse(response.headers.get("Location")).path, "/api/post/{}".format(postA.id))
 
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["id"], postA.id)

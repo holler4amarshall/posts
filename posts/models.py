@@ -16,4 +16,20 @@ class Post(Base):
             "body": self.body
         }
         return post
+        
+        
+class Put(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(128))
+    body = Column(String(1024))
+    
+    def as_dictionary(self):
+        post = {
+            "id": id,
+            "title": self.title,
+            "body": self.body
+        }
+        return post
 
