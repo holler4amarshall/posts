@@ -283,6 +283,41 @@ class TestAPI(unittest.TestCase):
 
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["message"], "'body' is a required property")
+        
+    def test_put_post(self): 
+        """ Editing an existing post, using Put method """
+        
+        postA = models.Post(title="Example Post A", body="Just a test")
+        session.add_all([postA])
+        session.commit()
+        
+        data = {
+            "title": "An updated post title",
+            "body": "An updated body of the post"
+        }
+
+        response = self.client.post("/api/post/{}".format(postA.id),
+            data=json.dumps(data),
+            content_type="application/json",
+            headers=[("Accept", "application/json")]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "application/json")
+        self.assertEqual(urlparse(response.headers.get("Location")).path,
+                         "/api/posts/{}".format(postA.id))
+
+        data = json.loads(response.data.decode("ascii"))
+        self.assertEqual(data["id"], postA.id)
+        self.assertEqual(data["title"], "An updated post title")
+        self.assertEqual(data["body"], "An updated body of the post")
+
+        posts = session.query(models.Post).all()
+        self.assertEqual(len(posts), 1)
+
+        post = posts[0]
+        self.assertEqual(post.title, "An updated post title")
+        self.assertEqual(post.body, "An updated body of the post")
 
 
     def tearDown(self):
