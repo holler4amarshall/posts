@@ -216,8 +216,8 @@ class TestAPI(unittest.TestCase):
             content_type="application/json",
             headers=[("Accept", "application/json")]
         )
-
-        self.assertEqual(response.status_code, 201)
+        
+        self.assertEqual(response.status_code, 201) #201 Created Status
         self.assertEqual(response.mimetype, "application/json")
         self.assertEqual(urlparse(response.headers.get("Location")).path,
                          "/api/posts/1")
