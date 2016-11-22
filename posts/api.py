@@ -87,7 +87,7 @@ def post_get(id):
     return Response(data, 200, mimetype="application/json")
     
 @app.route("/api/posts/<int:id>", methods=["DELETE"])
-#@decorators.accept("application/json")
+@decorators.accept("application/json")
 def post_delete(id): 
     """Delete single post"""
     
