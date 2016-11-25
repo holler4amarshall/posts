@@ -20,7 +20,7 @@ post_schema = {
 
 put_schema = {
     "properties": {
-        "id" : {"type" : "int"},
+        "id" : {"type" : "integer"},
         "title" : {"type" : "string"},
         "body": {"type": "string"}
     },
@@ -77,7 +77,7 @@ def posts_post():
                     mimetype="application/json")
     
 @app.route("/api/posts/<int:id>", methods=["GET"])
-#@decorators.accept("application/json")
+@decorators.accept("application/json")
 def post_get(id):
     """ Single post endpoint """
     # Get the post from the database
@@ -113,8 +113,9 @@ def post_put(id):
         
 
     # Edit an existing post in the database
-    post = models.Put(id=data["id"], title=data["title"], body=data["body"])
-    session.add(post)
+    post = session.query(models.Post).get(id)
+    post.title = data["title"]
+    post.body = data["body"]
     session.commit()
     
     # Check whether the post exists

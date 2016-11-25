@@ -81,8 +81,10 @@ class TestAPI(unittest.TestCase):
 
         session.add_all([postA, postB])
         session.commit()
-
-        response = self.client.get("/api/posts/{}".format(postB.id))
+        
+        response = self.client.get("/api/posts/{}".format(postB.id),
+            headers=[("Accept", "application/json")]
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, "application/json")
@@ -93,7 +95,9 @@ class TestAPI(unittest.TestCase):
 
     def test_get_non_existent_post(self):
         """ Getting a single post which doesn't exist """
-        response = self.client.get("/api/posts/1")
+        response = self.client.get("/api/posts/1",
+            headers=[("Accept", "application/json")]
+        )
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.mimetype, "application/json")
@@ -294,11 +298,10 @@ class TestAPI(unittest.TestCase):
         
         #set up the data for the edited post
         data = {
-            "id": "{}".format(postA.id),
+            "id": postA.id,
             "title": "An updated post title",
             "body": "An updated body of the post"
         }
-        
         
         response = self.client.put("/api/post/{}".format(postA.id),
             data=json.dumps(data),
@@ -306,11 +309,13 @@ class TestAPI(unittest.TestCase):
             headers=[("Accept", "application/json")]
         )
         
+        
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, "application/json")
-        self.assertEqual(urlparse(response.headers.get("Location")).path, "/api/post/{}".format(postA.id))
+        self.assertEqual(urlparse(response.headers.get("Location")).path, "/api/posts/{}".format(postA.id))
 
         data = json.loads(response.data.decode("ascii"))
+        
         self.assertEqual(data["id"], postA.id)
         self.assertEqual(data["title"], "An updated post title")
         self.assertEqual(data["body"], "An updated body of the post")
